@@ -8,5 +8,5 @@ import react from "@vitejs/plugin-react";
 //     -> base: "/" 로 설정하세요.
 export default defineConfig({
   plugins: [react()],
-  base: "",
+  base: "/DevPortpolio/",
 });
