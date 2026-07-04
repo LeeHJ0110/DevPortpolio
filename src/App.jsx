@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Mail, Github, ArrowLeft, ArrowUpRight, Users, GitBranch, Terminal } from "lucide-react";
+import { Mail, Github, ArrowLeft, ArrowUpRight, Users, GitBranch, Terminal, Copy, Check } from "lucide-react";
 
 /* =========================================================
    DATA — 아래 값들을 본인 정보로 자유롭게 수정하세요.
@@ -141,18 +141,18 @@ const GlobalStyle = () => (
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css');
 
     :root{
-      --bg:#12100C;
-      --bg-soft:#181510;
-      --surface:#1D1912;
-      --surface-hover:#241F17;
-      --border:#332C1F;
-      --text:#F3EEE3;
-      --text-muted:#9C9382;
-      --text-faint:#6B6455;
-      --amber:#F5A623;
-      --amber-soft:rgba(245,166,35,0.12);
-      --mint:#7FDBB6;
-      --mint-soft:rgba(127,219,182,0.12);
+      --bg:#060807;
+      --bg-soft:#0A0D0B;
+      --surface:#0E1512;
+      --surface-hover:#131C17;
+      --border:#1D2E25;
+      --text:#E7F6EC;
+      --text-muted:#8CA396;
+      --text-faint:#566B60;
+      --amber:#39FF7A;
+      --amber-soft:rgba(57,255,122,0.12);
+      --mint:#12B87C;
+      --mint-soft:rgba(18,184,124,0.14);
     }
 
     .lhj-root{
@@ -199,6 +199,7 @@ const GlobalStyle = () => (
     }
     .lhj-cursor{
       display:inline-block; width:8px; height:15px; background:var(--amber);
+      box-shadow:0 0 8px var(--amber);
       animation:blink 1.1s steps(1) infinite;
     }
     @keyframes blink{ 50%{ opacity:0; } }
@@ -224,8 +225,8 @@ const GlobalStyle = () => (
       transition:transform .15s ease, background .15s ease, border-color .15s ease;
     }
     .lhj-btn:active{ transform:translateY(1px); }
-    .lhj-btn-primary{ background:var(--amber); color:#1a1400; }
-    .lhj-btn-primary:hover{ background:#ffb940; }
+    .lhj-btn-primary{ background:var(--amber); color:#03170B; }
+    .lhj-btn-primary:hover{ background:#5CFF95; }
     .lhj-btn-ghost{ background:transparent; color:var(--text); border-color:var(--border); }
     .lhj-btn-ghost:hover{ border-color:var(--text-muted); background:var(--surface); }
 
@@ -273,11 +274,12 @@ const GlobalStyle = () => (
     .lhj-card{
       background:var(--surface); border:1px solid var(--border); border-radius:14px;
       padding:28px; cursor:pointer; text-align:left; color:inherit;
-      transition:border-color .18s ease, transform .18s ease, background .18s ease;
+      transition:border-color .18s ease, transform .18s ease, background .18s ease, box-shadow .18s ease;
       display:flex; flex-direction:column; gap:14px;
     }
     .lhj-card:hover, .lhj-card:focus-visible{
       border-color:var(--amber); transform:translateY(-3px); background:var(--surface-hover);
+      box-shadow:0 0 0 1px var(--amber-soft), 0 12px 30px -12px rgba(57,255,122,0.25);
       outline:none;
     }
     .lhj-card-top{ display:flex; align-items:center; justify-content:space-between; }
@@ -292,7 +294,8 @@ const GlobalStyle = () => (
     /* footer */
     .lhj-footer{ padding:56px 0 64px; border-top:1px solid var(--border); }
     .lhj-footer-inner{ display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:20px; }
-    .lhj-footer-quote{ color:var(--text-muted); font-size:15px; max-width:440px; }
+    .lhj-footer-quote{ color:var(--text-muted); font-size:15px; max-width:440px; margin:0 0 10px; }
+    .lhj-footer-email{ color:var(--amber); font-size:14px; margin:0; }
     .lhj-footer-links{ display:flex; gap:14px; }
     .lhj-icon-btn{
       display:flex; align-items:center; justify-content:center; width:40px; height:40px;
@@ -340,7 +343,7 @@ const GlobalStyle = () => (
     .lhj-log-hash{ font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--text-faint); margin-bottom:6px; }
     .lhj-log-text{ font-size:14.5px; color:var(--text); margin:0; }
 
-    .lhj-retro{ background:var(--mint-soft); border:1px solid rgba(127,219,182,0.3); border-radius:12px; padding:24px; font-size:14.5px; color:var(--text); margin-top:8px; }
+    .lhj-retro{ background:var(--mint-soft); border:1px solid rgba(18,184,124,0.35); border-radius:12px; padding:24px; font-size:14.5px; color:var(--text); margin-top:8px; }
 
     .lhj-detail-nav{ display:flex; justify-content:space-between; margin-top:48px; padding-top:28px; border-top:1px solid var(--border); }
 
@@ -370,12 +373,41 @@ function Nav({ onHome }) {
         </button>
         <div className="lhj-nav-links">
           <a href="#about">About</a>
-          <a href="#skills">Skills</a>
           <a href="#projects">Projects</a>
           <a href="#contact">Contact</a>
         </div>
       </div>
     </div>
+  );
+}
+
+function EmailTag({ variant = "primary" }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(PERSONAL.email);
+    } catch (e) {
+      // 클립보드 접근이 막힌 환경 대비: 조용히 무시
+    }
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1600);
+  };
+
+  if (variant === "icon") {
+    return (
+      <button className="lhj-icon-btn" onClick={handleCopy} aria-label="이메일 복사" type="button">
+        {copied ? <Check size={17} /> : <Mail size={17} />}
+      </button>
+    );
+  }
+
+  return (
+    <button className="lhj-btn lhj-btn-primary" onClick={handleCopy} type="button">
+      <Mail size={16} />
+      {copied ? "복사됨" : PERSONAL.email}
+      {!copied && <Copy size={14} style={{ opacity: 0.7 }} />}
+    </button>
   );
 }
 
@@ -396,9 +428,7 @@ function Hero() {
           <span className="lhj-badge">Spring · React</span>
         </div>
         <div className="lhj-cta-row">
-          <a className="lhj-btn lhj-btn-primary" href={`mailto:${PERSONAL.email}`}>
-            <Mail size={16} /> Email
-          </a>
+          <EmailTag />
           <a className="lhj-btn lhj-btn-ghost" href={PERSONAL.github} target="_blank" rel="noreferrer">
             <Github size={16} /> GitHub
           </a>
@@ -407,9 +437,9 @@ function Hero() {
 
       <div className="lhj-term">
         <div className="lhj-term-bar">
-          <span className="lhj-term-dot" style={{ background: "#F5A623" }} />
-          <span className="lhj-term-dot" style={{ background: "#7FDBB6" }} />
-          <span className="lhj-term-dot" style={{ background: "#4A4335" }} />
+          <span className="lhj-term-dot" style={{ background: "#39FF7A" }} />
+          <span className="lhj-term-dot" style={{ background: "#12B87C" }} />
+          <span className="lhj-term-dot" style={{ background: "#1D2E25" }} />
           <span className="mono" style={{ marginLeft: 8, fontSize: 12, color: "var(--text-faint)" }}>
             skills.json
           </span>
@@ -528,11 +558,12 @@ function Footer() {
   return (
     <footer id="contact" className="lhj-footer lhj-container">
       <div className="lhj-footer-inner">
-        <p className="lhj-footer-quote">{PERSONAL.closing}</p>
+        <div>
+          <p className="lhj-footer-quote">{PERSONAL.closing}</p>
+          <p className="lhj-footer-email mono">{PERSONAL.email}</p>
+        </div>
         <div className="lhj-footer-links">
-          <a className="lhj-icon-btn" href={`mailto:${PERSONAL.email}`} aria-label="이메일">
-            <Mail size={17} />
-          </a>
+          <EmailTag variant="icon" />
           <a className="lhj-icon-btn" href={PERSONAL.github} target="_blank" rel="noreferrer" aria-label="깃허브">
             <Github size={17} />
           </a>
